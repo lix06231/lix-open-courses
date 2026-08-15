@@ -1,0 +1,1044 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f45b65">
+  <title>普通人也能看懂的 GitHub｜AI Agent 小白课</title>
+  <style>
+    :root {
+      --ink: #1d1d20;
+      --muted: #6e6b73;
+      --paper: #fbf8f1;
+      --white: #fff;
+      --line: rgba(29,29,32,.14);
+      --strong-line: #29292d;
+      --red: #f45b65;
+      --red-soft: #fff0f0;
+      --yellow: #f6d85d;
+      --yellow-soft: #fff8d8;
+      --blue: #79bdf2;
+      --blue-soft: #eef7ff;
+      --purple: #a98be8;
+      --purple-soft: #f4efff;
+      --green: #73c897;
+      --green-soft: #edf9f1;
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+      font-size: 17px;
+      line-height: 1.86;
+      letter-spacing: .01em;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    .shell {
+      width: min(100% - 32px, 1140px);
+      margin: 0 auto;
+      padding: 16px 0 76px;
+      display: grid;
+      grid-template-columns: 230px minmax(0, 850px);
+      gap: 30px;
+      align-items: start;
+    }
+    .reader { min-width: 0; }
+
+    .side-toc {
+      position: sticky;
+      top: 16px;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+      padding: 18px 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.84);
+      backdrop-filter: blur(12px);
+    }
+    .side-toc strong { display: block; padding: 0 8px 10px; font-size: 15px; }
+    .side-toc a,
+    .mobile-toc a {
+      display: grid;
+      grid-template-columns: 27px 1fr;
+      gap: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+      line-height: 1.45;
+      text-decoration: none;
+    }
+    .side-toc a span,
+    .mobile-toc a span { color: var(--red); font-size: 11px; font-weight: 900; }
+    .side-toc a:hover,
+    .side-toc a.is-active,
+    .mobile-toc a.is-active { background: var(--red-soft); color: var(--ink); }
+    .side-toc .back-top { display: block; margin-top: 8px; border-top: 1px solid var(--line); padding-top: 12px; color: var(--ink); }
+
+    .toc-toggle {
+      display: none;
+      position: fixed;
+      right: 16px;
+      bottom: 18px;
+      z-index: 30;
+      min-width: 64px;
+      min-height: 44px;
+      padding: 10px 15px;
+      border: 1.5px solid var(--strong-line);
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(29,29,32,.2);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+    .toc-backdrop {
+      visibility: hidden;
+      position: fixed;
+      inset: 0;
+      z-index: 38;
+      background: rgba(29,29,32,.34);
+      opacity: 0;
+      transition: opacity .2s ease, visibility .2s ease;
+    }
+    .mobile-toc {
+      visibility: hidden;
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      z-index: 40;
+      width: min(calc(100% - 20px), 390px);
+      max-height: min(76vh, 620px);
+      overflow: auto;
+      padding: 18px 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: #fff;
+      box-shadow: 0 20px 60px rgba(29,29,32,.25);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+    }
+    .mobile-toc-head { display: flex; align-items: center; justify-content: space-between; padding: 0 8px 10px; }
+    .mobile-toc-head strong { font-size: 18px; }
+    .toc-close { border: 0; background: transparent; color: var(--muted); font-size: 24px; line-height: 1; cursor: pointer; }
+    body.toc-open { overflow: hidden; }
+    body.toc-open .toc-backdrop,
+    body.toc-open .mobile-toc { visibility: visible; opacity: 1; }
+    body.toc-open .mobile-toc { transform: translateY(0); }
+
+    .cover {
+      position: relative;
+      overflow: hidden;
+      min-height: 640px;
+      padding: 36px 34px 32px;
+      border: 1.8px solid var(--strong-line);
+      border-radius: 30px;
+      background: #fff1ed;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      isolation: isolate;
+    }
+
+    .cover::before {
+      content: "";
+      position: absolute;
+      width: 310px;
+      height: 310px;
+      right: -120px;
+      top: -120px;
+      border: 1.8px solid var(--strong-line);
+      border-radius: 50%;
+      background: var(--yellow);
+      z-index: -1;
+    }
+
+    .cover::after {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      left: -100px;
+      bottom: -90px;
+      border: 1.8px solid var(--strong-line);
+      border-radius: 45px;
+      background: var(--blue);
+      transform: rotate(16deg);
+      z-index: -1;
+    }
+
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 12px;
+      border: 1.4px solid var(--strong-line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.9);
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1;
+    }
+    .pill.red { background: var(--red); color: #fff; }
+
+    h1 {
+      max-width: 730px;
+      margin: 44px 0 20px;
+      font-size: clamp(49px, 9vw, 82px);
+      line-height: 1.01;
+      letter-spacing: -.06em;
+      font-weight: 950;
+    }
+    .cover-lead {
+      max-width: 630px;
+      margin: 0;
+      font-size: clamp(20px, 3.6vw, 27px);
+      line-height: 1.5;
+      font-weight: 720;
+    }
+    .marker { padding: 0 .12em; background: linear-gradient(transparent 53%, var(--yellow) 53% 92%, transparent 92%); }
+    .cover-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 46px; }
+    .cover-meta div { padding: 13px 14px; border: 1.3px solid var(--strong-line); border-radius: 15px; background: rgba(255,255,255,.9); }
+    .cover-meta b { display: block; font-size: 18px; line-height: 1.35; }
+    .cover-meta span { color: var(--muted); font-size: 12px; font-weight: 700; }
+
+    .intro-note {
+      margin: 28px 0 36px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: rgba(255,255,255,.74);
+      color: #4c4a51;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .toc {
+      margin: 36px 0 52px;
+      padding: 28px 27px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+    .toc h2 { margin: 0 0 18px; font-size: 28px; }
+    .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 24px; }
+    .toc a { display: flex; gap: 9px; align-items: baseline; padding: 6px 0; text-decoration: none; font-size: 14px; font-weight: 750; line-height: 1.45; }
+    .toc a span { min-width: 24px; color: var(--red); font-size: 12px; font-weight: 900; }
+
+    .part-title {
+      margin: 74px 0 12px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid var(--strong-line);
+    }
+    .part-title small { display: block; margin-bottom: 4px; color: var(--red); font-size: 12px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .part-title h2 { margin: 0; font-size: clamp(32px, 6vw, 48px); line-height: 1.2; letter-spacing: -.04em; }
+
+    .chapter {
+      margin: 0;
+      padding: 48px 4px 54px;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: 20px;
+    }
+    .chapter-head { display: grid; grid-template-columns: 58px 1fr; gap: 17px; align-items: start; margin-bottom: 26px; }
+    .chapter-no {
+      display: flex;
+      width: 52px;
+      height: 52px;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid var(--strong-line);
+      border-radius: 16px;
+      background: var(--red);
+      color: #fff;
+      font-weight: 950;
+      transform: rotate(-2deg);
+    }
+    .chapter.blue .chapter-no { background: var(--blue); color: var(--ink); }
+    .chapter.purple .chapter-no { background: var(--purple); }
+    .chapter.green .chapter-no { background: var(--green); color: var(--ink); }
+    .chapter.yellow .chapter-no { background: var(--yellow); color: var(--ink); }
+    .chapter-kicker { margin: 0 0 5px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .chapter h2 { margin: 0; font-size: clamp(29px, 5.6vw, 43px); line-height: 1.18; letter-spacing: -.04em; }
+    .chapter h3 { margin: 31px 0 11px; font-size: 22px; line-height: 1.35; letter-spacing: -.02em; }
+    .chapter p { margin: 0 0 16px; }
+
+    .scene {
+      margin: 22px 0;
+      padding: 19px 21px;
+      border-left: 5px solid var(--red);
+      border-radius: 0 15px 15px 0;
+      background: #fff;
+      font-size: 18px;
+      font-weight: 720;
+      line-height: 1.72;
+    }
+    .chapter.blue .scene { border-left-color: var(--blue); }
+    .chapter.purple .scene { border-left-color: var(--purple); }
+    .chapter.green .scene { border-left-color: var(--green); }
+
+    .big-line { margin: 28px 0; font-size: clamp(23px, 4.8vw, 34px); line-height: 1.42; font-weight: 920; letter-spacing: -.025em; }
+
+    .takeaway {
+      margin: 26px 0 0;
+      padding: 16px 18px;
+      border-left: 5px solid var(--yellow);
+      border-radius: 0 14px 14px 0;
+      background: var(--yellow-soft);
+      font-weight: 820;
+      line-height: 1.65;
+    }
+    .takeaway small { display: block; margin-bottom: 3px; color: #796815; font-size: 11px; font-weight: 900; letter-spacing: .1em; }
+
+    .concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 22px 0; }
+    .concept-card { padding: 18px; border: 1px solid var(--line); border-radius: 17px; background: #fff; }
+    .concept-card b { display: block; margin-bottom: 5px; font-size: 19px; }
+    .concept-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.62; }
+    .concept-card .tag { display: inline-block; margin-bottom: 9px; padding: 3px 8px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 11px; font-weight: 850; }
+
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; margin: 22px 0; }
+    .compare > div { padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
+    .compare h3 { margin: 0 0 7px; font-size: 20px; }
+    .compare p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+
+    .steps { display: grid; gap: 10px; margin: 22px 0; padding: 0; list-style: none; }
+    .steps li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; padding: 14px 15px; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.7); }
+    .steps li::before { content: attr(data-n); display: flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 9px; background: var(--ink); color: #fff; font-size: 12px; font-weight: 900; }
+    .steps b { display: block; margin-bottom: 2px; line-height: 1.45; }
+    .steps span { display: block; color: var(--muted); font-size: 14px; line-height: 1.58; }
+
+    .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: stretch; margin: 24px 0; }
+    .flow div { position: relative; padding: 17px 14px; border: 1px solid var(--line); border-radius: 16px; background: #fff; text-align: center; }
+    .flow div:not(:last-child)::after { content: "→"; position: absolute; right: -12px; top: 50%; z-index: 1; width: 22px; transform: translateY(-50%); color: var(--red); font-weight: 950; }
+    .flow b { display: block; font-size: 17px; }
+    .flow span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .figure {
+      margin: 26px 0;
+      padding: 18px 18px 14px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+    }
+    .figure-title { margin: 0 0 10px; font-size: 15px; font-weight: 900; line-height: 1.45; }
+    .diagram-svg { display: block; width: 100%; height: auto; }
+    .figure figcaption { margin-top: 9px; color: var(--muted); font-size: 12px; line-height: 1.58; }
+    .diagram-svg .box { fill: #fff; stroke: #29292d; stroke-width: 2; }
+    .diagram-svg .soft-red { fill: #fff0f0; }
+    .diagram-svg .soft-blue { fill: #eef7ff; }
+    .diagram-svg .soft-yellow { fill: #fff8d8; }
+    .diagram-svg .soft-purple { fill: #f4efff; }
+    .diagram-svg .soft-green { fill: #edf9f1; }
+    .diagram-svg .line { fill: none; stroke: #29292d; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .diagram-svg .dash { stroke-dasharray: 7 7; }
+    .diagram-svg .label { fill: #1d1d20; font-size: 22px; font-weight: 850; text-anchor: middle; }
+    .diagram-svg .small { fill: #6e6b73; font-size: 16px; font-weight: 650; text-anchor: middle; }
+    .diagram-svg .tiny { fill: #6e6b73; font-size: 14px; font-weight: 700; text-anchor: middle; }
+    .diagram-svg .arrow-label { fill: #c13743; font-size: 15px; font-weight: 850; text-anchor: middle; }
+
+    .code-note { margin: 20px 0; padding: 18px 19px; border-radius: 16px; background: #242429; color: #f8f5ed; font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 13px; line-height: 1.78; overflow-x: auto; }
+    .code-note .comment { color: #aaa8b2; }
+    .code-note .hot { color: #f6d85d; }
+
+    .prompt {
+      position: relative;
+      margin: 28px 0;
+      padding: 25px 21px 20px;
+      border: 1.5px solid var(--strong-line);
+      border-radius: 18px;
+      background: var(--purple-soft);
+    }
+    .prompt::before { content: "可以直接发给 Agent"; position: absolute; top: -13px; left: 17px; padding: 4px 10px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 11px; font-weight: 850; }
+    .prompt p { margin: 0; font-size: 15px; line-height: 1.8; font-weight: 650; }
+    .prompt.compact { border: 1px solid var(--line); border-left: 4px solid var(--purple); background: #fff; }
+
+    .warning { margin: 22px 0; padding: 17px 18px; border: 1px solid rgba(244,91,101,.35); border-radius: 15px; background: var(--red-soft); }
+    .warning b { display: block; margin-bottom: 4px; color: #c13743; }
+    .warning p { margin: 0; font-size: 14px; line-height: 1.65; }
+
+    .plain-list { margin: 16px 0 20px; padding-left: 1.25em; }
+    .plain-list li { margin: 8px 0; padding-left: .25em; }
+
+    .summary {
+      margin-top: 64px;
+      padding: 34px 30px;
+      border: 1.8px solid var(--strong-line);
+      border-radius: 25px;
+      background: var(--ink);
+      color: #fff;
+    }
+    .summary h2 { margin: 0 0 12px; font-size: clamp(32px, 6vw, 48px); line-height: 1.18; }
+    .summary > p { color: rgba(255,255,255,.76); }
+    .memory { display: grid; gap: 10px; margin: 23px 0 0; padding: 0; list-style: none; counter-reset: m; }
+    .memory li { position: relative; padding: 13px 14px 13px 52px; border: 1px solid rgba(255,255,255,.22); border-radius: 14px; background: rgba(255,255,255,.07); line-height: 1.55; font-weight: 700; }
+    .memory li::before { counter-increment: m; content: counter(m); position: absolute; left: 13px; top: 12px; display: flex; width: 27px; height: 27px; align-items: center; justify-content: center; border-radius: 8px; background: var(--yellow); color: var(--ink); font-size: 12px; font-weight: 950; }
+
+    .sources { margin-top: 42px; padding: 25px 23px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.65); color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .sources h2 { margin: 0 0 11px; color: var(--ink); font-size: 23px; }
+    .sources h3 { margin: 18px 0 7px; color: var(--ink); font-size: 15px; }
+    .sources ul { margin: 0; padding-left: 1.25em; }
+    .sources li { margin: 5px 0; }
+    .sources a { color: #c93c48; font-weight: 700; }
+
+    .meta { margin-top: 23px; color: #7b7880; font-size: 11px; line-height: 1.65; text-align: center; }
+
+    @media (max-width: 1040px) {
+      .shell { width: min(100% - 30px, 850px); display: block; }
+      .side-toc { display: none; }
+      .toc-toggle { display: block; }
+    }
+
+    @media (max-width: 620px) {
+      body { font-size: 16px; line-height: 1.8; }
+      .shell { width: min(100% - 20px, 850px); padding-top: 10px; }
+      .cover { min-height: 610px; padding: 25px 21px 24px; border-radius: 25px; }
+      .cover-meta { grid-template-columns: 1fr; gap: 7px; margin-top: 35px; }
+      .cover-meta div { display: flex; gap: 7px; align-items: baseline; padding: 10px 12px; }
+      .cover-meta b { font-size: 16px; }
+      .toc { padding: 23px 19px; }
+      .toc-grid, .concept-grid, .compare { grid-template-columns: 1fr; }
+      .chapter { padding: 40px 1px 46px; }
+      .chapter-head { grid-template-columns: 47px 1fr; gap: 12px; }
+      .chapter-no { width: 43px; height: 43px; border-radius: 13px; font-size: 14px; }
+      .flow { grid-template-columns: 1fr; }
+      .flow div:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -17px; transform: translateX(-50%); }
+      .figure { padding: 13px 10px 11px; border-radius: 17px; }
+      .summary { padding: 28px 20px; }
+    }
+
+    @media print {
+      @page { size: A5; margin: 13mm; }
+      body { background: #fff; font-size: 10.5pt; line-height: 1.65; }
+      .shell { width: 100%; padding: 0; display: block; }
+      .side-toc, .toc-toggle, .toc-backdrop, .mobile-toc { display: none !important; }
+      .cover { min-height: 175mm; break-after: page; }
+      .chapter, .summary, .sources, .concept-card, .compare > div, .prompt, .warning, .takeaway { break-inside: avoid; }
+      .chapter { padding: 10mm 0; }
+      a { text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <button class="toc-toggle" id="tocToggle" type="button" aria-controls="mobileToc" aria-expanded="false">目录</button>
+  <div class="toc-backdrop" id="tocBackdrop" aria-hidden="true"></div>
+  <nav class="mobile-toc" id="mobileToc" aria-label="手机课程目录" aria-hidden="true">
+    <div class="mobile-toc-head"><strong>跳到哪一章？</strong><button class="toc-close" id="tocClose" type="button" aria-label="关闭目录">×</button></div>
+    <a href="#c1"><span>01</span> 为什么用了 Agent，就会碰到 GitHub</a>
+    <a href="#c2"><span>02</span> Git、GitHub、Repo 到底什么关系</a>
+    <a href="#c3"><span>03</span> 打开一个 GitHub 项目，先看哪里</a>
+    <a href="#c4"><span>04</span> Download、Clone、Fork 怎么选</a>
+    <a href="#c5"><span>05</span> 第一次让 Agent 配置 Git</a>
+    <a href="#c6"><span>06</span> Status、Diff、Commit 在记录什么</a>
+    <a href="#c7"><span>07</span> Branch 和 Pull Request 为什么有用</a>
+    <a href="#c8"><span>08</span> Push、Pull 与本地、云端同步</a>
+    <a href="#c9"><span>09</span> 给 Agent 留一份项目说明书</a>
+    <a href="#c10"><span>10</span> 一套普通人可用的 Agent 工作流</a>
+    <a href="#c11"><span>11</span> 公开仓库、API Key 与安全边界</a>
+    <a href="#c12"><span>12</span> 五个常见场景，应该怎样开口</a>
+  </nav>
+  <main class="shell">
+    <aside class="side-toc" aria-label="随读课程目录">
+      <strong>随读目录</strong>
+      <a href="#c1"><span>01</span> Agent 为什么需要 GitHub</a>
+      <a href="#c2"><span>02</span> Git、GitHub、Repo</a>
+      <a href="#c3"><span>03</span> 怎样看一个项目</a>
+      <a href="#c4"><span>04</span> ZIP、Clone、Fork</a>
+      <a href="#c5"><span>05</span> 第一次配置 Git</a>
+      <a href="#c6"><span>06</span> Status、Diff、Commit</a>
+      <a href="#c7"><span>07</span> Branch 与 PR</a>
+      <a href="#c8"><span>08</span> Push 与 Pull</a>
+      <a href="#c9"><span>09</span> Agent 项目说明</a>
+      <a href="#c10"><span>10</span> 安全工作流</a>
+      <a href="#c11"><span>11</span> 密钥与安全边界</a>
+      <a href="#c12"><span>12</span> 五个常见场景</a>
+      <a class="back-top" href="#top">↑ 返回封面</a>
+    </aside>
+    <div class="reader" id="top">
+    <header class="cover">
+      <div>
+        <div class="pills">
+          <span class="pill red">完整课程 · 第一版</span>
+          <span class="pill">普通人友好</span>
+          <span class="pill">不要求会编程</span>
+        </div>
+        <h1>普通人<br>也能看懂的<br>GitHub</h1>
+        <p class="cover-lead">不背命令，只讲清楚：<span class="marker">AI Agent 为什么总要用它，以及你怎样让它更安全地干活。</span></p>
+      </div>
+      <div class="cover-meta">
+        <div><b>约 60—90 分钟</b><span>可以分几次随手看</span></div>
+        <div><b>12 个短章</b><span>每章只回答一个问题</span></div>
+        <div><b>自然语言为主</b><span>命令交给 Agent 执行</span></div>
+      </div>
+    </header>
+
+    <div class="intro-note">
+      <b>这门课不教你成为程序员。</b><br>
+      它只希望你以后打开 GitHub 不再发懵，听见 Repo、Clone、Commit、Branch 时知道大概发生了什么；当 Agent 准备下载项目、修改文件或上传 GitHub 时，你也知道应该先问哪一句。
+    </div>
+
+    <nav class="toc" aria-label="课程目录">
+      <h2>课程目录</h2>
+      <div class="toc-grid">
+        <a href="#c1"><span>01</span> 为什么用了 Agent，就会碰到 GitHub</a>
+        <a href="#c2"><span>02</span> Git、GitHub、Repo 到底什么关系</a>
+        <a href="#c3"><span>03</span> 打开一个 GitHub 项目，先看哪里</a>
+        <a href="#c4"><span>04</span> Download、Clone、Fork 怎么选</a>
+        <a href="#c5"><span>05</span> 第一次让 Agent 配置 Git</a>
+        <a href="#c6"><span>06</span> Status、Diff、Commit 在记录什么</a>
+        <a href="#c7"><span>07</span> Branch 和 Pull Request 为什么有用</a>
+        <a href="#c8"><span>08</span> Push、Pull 与本地、云端同步</a>
+        <a href="#c9"><span>09</span> 给 Agent 留一份项目说明书</a>
+        <a href="#c10"><span>10</span> 一套普通人可用的 Agent 工作流</a>
+        <a href="#c11"><span>11</span> 公开仓库、API Key 与安全边界</a>
+        <a href="#c12"><span>12</span> 五个常见场景，应该怎样开口</a>
+      </div>
+    </nav>
+
+    <div class="part-title">
+      <small>Part 01 · 先看懂</small>
+      <h2>GitHub 没有看起来那么神秘</h2>
+    </div>
+
+    <section class="chapter" id="c1">
+      <div class="chapter-head">
+        <div class="chapter-no">01</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：为什么普通人突然也要懂一点 GitHub？</p>
+          <h2>为什么用了 Agent，就会碰到 GitHub</h2>
+        </div>
+      </div>
+      <div class="scene">你只是让 Agent 帮你安装一个 Skill，它却说：“我先 clone 这个 repository，检查 README，再看看当前 branch。”</div>
+      <p>很多普通人第一次接触 GitHub，不是因为想学编程，而是因为 Agent 把它带到了面前。</p>
+      <p>以前，写程序的人需要自己找项目、下载代码、保存版本、处理协作。现在 Agent 能代替我们完成不少操作，但它仍然要在这些项目和版本上工作。于是，过去属于程序员的基础设施，开始出现在普通人的使用场景里。</p>
+      <p>你可能会在这些时候碰到 GitHub：</p>
+      <ul class="plain-list">
+        <li>让 Agent 安装一个开源工具、插件、Skill 或 MCP；</li>
+        <li>让 Agent 接手别人发布的网页、应用或自动化项目；</li>
+        <li>把自己做的 HTML、脚本或资料保存起来；</li>
+        <li>让 Codex、Claude Code 等 Agent 长期修改同一个项目；</li>
+        <li>想把自己的成果分享给别人，或者换一台电脑继续工作。</li>
+      </ul>
+      <p>但这不意味着“没有 GitHub，Agent 就不能工作”。本地 Agent 完全可以直接操作普通文件夹。Git 和 GitHub 的价值，是让这些操作多出记录、退路、同步和协作。</p>
+      <p class="big-line">你要学的不是“怎么替 Agent 敲命令”，而是<span class="marker">怎么听懂它准备做什么。</span></p>
+      <div class="takeaway"><small>一句话带走</small>Agent 把普通人带进了项目世界；懂一点 GitHub，是为了更清楚地指挥和验收它。</div>
+    </section>
+
+    <section class="chapter blue" id="c2">
+      <div class="chapter-head">
+        <div class="chapter-no">02</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：三个最容易混淆的词有什么区别？</p>
+          <h2>Git、GitHub、Repo 到底什么关系</h2>
+        </div>
+      </div>
+      <p>先把三个概念摆到一张图里：</p>
+      <figure class="figure">
+        <p class="figure-title">一张图看懂：Agent 在项目里动手，Git 负责留痕，GitHub 负责把项目放到云端</p>
+        <svg class="diagram-svg" viewBox="0 0 600 360" role="img" aria-labelledby="rel-title rel-desc">
+          <title id="rel-title">Agent、Repo、Git 与 GitHub 的关系</title>
+          <desc id="rel-desc">Agent 读取和修改项目仓库，Git 在本地记录仓库的变化，GitHub 保存并同步云端仓库。</desc>
+          <defs><marker id="arrow-rel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
+          <rect class="box soft-purple" x="200" y="22" width="200" height="68" rx="18"/>
+          <text class="label" x="300" y="52">AI Agent</text><text class="small" x="300" y="75">读取、修改、检查</text>
+          <path class="line" d="M300 91 L300 132" marker-end="url(#arrow-rel)"/>
+          <text class="arrow-label" x="348" y="117">在这里干活</text>
+          <rect class="box soft-yellow" x="185" y="138" width="230" height="82" rx="18"/>
+          <text class="label" x="300" y="171">Repository</text><text class="small" x="300" y="197">项目文件 + 修改历史</text>
+          <rect class="box soft-blue" x="28" y="275" width="220" height="64" rx="18"/>
+          <text class="label" x="138" y="305">Git</text><text class="small" x="138" y="328">在电脑里记录变化</text>
+          <rect class="box soft-green" x="352" y="275" width="220" height="64" rx="18"/>
+          <text class="label" x="462" y="305">GitHub</text><text class="small" x="462" y="328">在云端保存与协作</text>
+          <path class="line" d="M162 273 L226 222" marker-end="url(#arrow-rel)"/>
+          <path class="line" d="M374 222 L438 273" marker-start="url(#arrow-rel)" marker-end="url(#arrow-rel)"/>
+          <text class="arrow-label" x="176" y="244">留痕</text><text class="arrow-label" x="424" y="244">同步</text>
+        </svg>
+        <figcaption>Repo 是大家共同围绕的“项目本体”；Git 和 GitHub 不是一回事，也都不等于 Agent。</figcaption>
+      </figure>
+
+      <h3>Git：电脑里的项目存档系统</h3>
+      <p>Git 是一种版本控制系统。它会记录项目在不同时刻的状态，让人知道改了什么、谁改的、什么时候改，以及必要时能否回到以前。</p>
+      <p>它可以完全在本地工作。没有网络，你照样可以让 Git 保存一次版本、比较前后差异。</p>
+
+      <h3>GitHub：网上的项目仓库与协作平台</h3>
+      <p>GitHub 用来托管 Git 仓库。除了把项目放到网上，它还提供 Issues、Pull Requests、代码审查、权限管理等功能。</p>
+      <p>如果把 Git 比作电脑里的“项目时光机”，GitHub 更像存放这些时光机档案的云端项目大厅。</p>
+
+      <h3>Repository：带历史记录的项目文件夹</h3>
+      <p>Repository 经常简称 Repo，中文一般翻译成“仓库”。它包含项目的文件、文件夹以及修改历史，可以是公开的，也可以是私有的。</p>
+      <div class="concept-grid">
+        <div class="concept-card"><span class="tag">GIT</span><b>本地历史</b><p>在电脑里记录变化，不一定需要 GitHub。</p></div>
+        <div class="concept-card"><span class="tag">GITHUB</span><b>云端项目</b><p>保存、发现、同步和协作 Git 仓库。</p></div>
+        <div class="concept-card"><span class="tag">REPO</span><b>项目单位</b><p>一组文件，加上它们过去发生过的变化。</p></div>
+        <div class="concept-card"><span class="tag">AGENT</span><b>执行者</b><p>读取项目、修改文件，并利用 Git 管理过程。</p></div>
+      </div>
+      <div class="takeaway"><small>最短记法</small>Git 管本地历史，GitHub 管云端项目，Repo 是它们共同围绕的项目单位。</div>
+    </section>
+
+    <section class="chapter green" id="c3">
+      <div class="chapter-head">
+        <div class="chapter-no">03</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：怎样快速判断一个项目值不值得碰？</p>
+          <h2>打开一个 GitHub 项目，先看哪里</h2>
+        </div>
+      </div>
+      <p>GitHub 项目页面看起来信息很多，但普通人不用每个按钮都懂。先看下面六个地方，通常已经能判断出大概。</p>
+      <figure class="figure">
+        <p class="figure-title">第一次打开陌生仓库，照着这条路线看</p>
+        <svg class="diagram-svg" viewBox="0 0 600 305" role="img" aria-labelledby="read-title read-desc">
+          <title id="read-title">GitHub 仓库阅读顺序</title>
+          <desc id="read-desc">先看 README，再看 Releases，然后查看最近更新、Issues、License 和发布者身份。</desc>
+          <defs><marker id="arrow-read" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
+          <path class="line dash" d="M172 79 L222 79 M378 79 L430 79 M503 116 L503 176 M430 214 L378 214 M222 214 L170 214" marker-end="url(#arrow-read)"/>
+          <g><rect class="box soft-red" x="22" y="42" width="150" height="74" rx="16"/><text class="tiny" x="48" y="66">01</text><text class="label" x="97" y="90">README</text><text class="tiny" x="97" y="108">它是干什么的</text></g>
+          <g><rect class="box soft-blue" x="222" y="42" width="156" height="74" rx="16"/><text class="tiny" x="247" y="66">02</text><text class="label" x="300" y="90">Releases</text><text class="tiny" x="300" y="108">有没有正式成品</text></g>
+          <g><rect class="box soft-yellow" x="430" y="42" width="148" height="74" rx="16"/><text class="tiny" x="454" y="66">03</text><text class="label" x="504" y="90">更新</text><text class="tiny" x="504" y="108">项目还活着吗</text></g>
+          <g><rect class="box soft-purple" x="430" y="176" width="148" height="76" rx="16"/><text class="tiny" x="454" y="200">04</text><text class="label" x="504" y="224">Issues</text><text class="tiny" x="504" y="243">大家遇到什么</text></g>
+          <g><rect class="box soft-green" x="222" y="176" width="156" height="76" rx="16"/><text class="tiny" x="247" y="200">05</text><text class="label" x="300" y="224">License</text><text class="tiny" x="300" y="243">允许怎样使用</text></g>
+          <g><rect class="box" x="22" y="176" width="148" height="76" rx="16"/><text class="tiny" x="46" y="200">06</text><text class="label" x="96" y="224">来源</text><text class="tiny" x="96" y="243">到底是谁发布的</text></g>
+          <text class="small" x="300" y="288">不用逛完整个页面，先走完这六站</text>
+        </svg>
+      </figure>
+      <ul class="steps">
+        <li data-n="1"><div><b>README：这个项目到底是干什么的</b><span>一般会说明用途、安装方式、使用方法、适用系统和常见问题。README 写得含糊，后面往往更容易踩坑。</span></div></li>
+        <li data-n="2"><div><b>Releases：有没有面向使用者的正式版本</b><span>作者可以在这里发布可下载的版本、安装包和更新说明。对小白来说，Release 常常比源代码压缩包更接近“可以直接使用的成品”。</span></div></li>
+        <li data-n="3"><div><b>最近更新时间：项目还活着吗</b><span>几年没更新不代表一定不能用，但如果它依赖新系统、新模型或新接口，过旧就可能成为实际风险。</span></div></li>
+        <li data-n="4"><div><b>Issues：大家正在遇到什么问题</b><span>Issues 可以记录 Bug、建议和任务。问题多不一定说明项目差，关键看维护者是否回应、严重问题是否长期无人处理。</span></div></li>
+        <li data-n="5"><div><b>License：别人允许你怎样使用</b><span>公开可见不等于随便复制、商用和二次发布。没有许可证时，默认版权规则仍然存在。</span></div></li>
+        <li data-n="6"><div><b>来源：它是谁发布的</b><span>优先找作者、公司、学校或官方组织的仓库。名字很像、搜索排名很靠前，也可能只是第三方复制品。</span></div></li>
+      </ul>
+      <div class="warning">
+        <b>Star 不是安全检测报告</b>
+        <p>Star 更像点赞或收藏，可以说明关注度，不能证明每个人都检查过代码。一个项目很火，也不代表你可以闭着眼睛运行它给出的安装命令。</p>
+      </div>
+      <p>还有一个很容易忽视的区别：GitHub 是代码和项目平台，不是经过统一审核的软件商店。仓库里的说明、命令和文件由项目维护者负责；把陌生命令交给 Agent 执行前，最好先让它解释影响范围。</p>
+      <div class="prompt"><p>先不要安装。请阅读这个项目的 README、Releases、最近更新、主要 Issues 和 License，告诉我它来自谁、是否仍在维护、适不适合我的系统，以及安装过程会下载和修改什么。</p></div>
+      <div class="takeaway"><small>最小阅读顺序</small>README → Releases → 最近更新 → Issues → License → 发布者身份。</div>
+    </section>
+
+    <section class="chapter yellow" id="c4">
+      <div class="chapter-head">
+        <div class="chapter-no">04</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：几个“复制项目”的按钮有什么不同？</p>
+          <h2>Download、Clone、Fork 怎么选</h2>
+        </div>
+      </div>
+      <div class="compare">
+        <div><h3>Download ZIP</h3><p>下载项目当前文件的压缩包。简单直接，但通常没有完整版本历史，也不会自动保持与原仓库的同步关系。</p></div>
+        <div><h3>Clone</h3><p>把仓库文件、历史和远程地址一起复制到电脑。适合准备长期修改、获取后续更新或让 Agent 正式接手的项目。</p></div>
+      </div>
+      <p>这两个动作看起来都像“下载”，区别在于你拿回来的是否仍然是一个完整 Git 仓库。</p>
+      <p>下载 ZIP 像把当前项目复印一份；Clone 像把整套档案和以后联系原仓库的方式一起带回来。</p>
+
+      <figure class="figure">
+        <p class="figure-title">三个动作，复制的“位置”和“关系”不一样</p>
+        <svg class="diagram-svg" viewBox="0 0 600 390" role="img" aria-labelledby="copy-title copy-desc">
+          <title id="copy-title">Download ZIP、Clone 和 Fork 的区别</title>
+          <desc id="copy-desc">ZIP 只把当前文件下载到电脑；Clone 把仓库与历史复制到电脑并保留远程关系；Fork 先在自己的 GitHub 账号中复制一份。</desc>
+          <defs><marker id="arrow-copy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
+          <rect class="box soft-yellow" x="170" y="18" width="260" height="68" rx="18"/>
+          <text class="label" x="300" y="49">别人的 GitHub 仓库</text><text class="small" x="300" y="72">共同的起点</text>
+          <path class="line" d="M213 88 L112 164" marker-end="url(#arrow-copy)"/><text class="arrow-label" x="137" y="124">ZIP</text>
+          <path class="line" d="M300 88 L300 164" marker-start="url(#arrow-copy)" marker-end="url(#arrow-copy)"/><text class="arrow-label" x="335" y="132">Clone</text>
+          <path class="line" d="M387 88 L488 164" marker-end="url(#arrow-copy)"/><text class="arrow-label" x="462" y="124">Fork</text>
+          <rect class="box soft-red" x="22" y="170" width="180" height="92" rx="18"/>
+          <text class="label" x="112" y="204">普通文件夹</text><text class="small" x="112" y="230">只有当前文件</text><text class="tiny" x="112" y="250">电脑里</text>
+          <rect class="box soft-blue" x="210" y="170" width="180" height="92" rx="18"/>
+          <text class="label" x="300" y="204">本地仓库</text><text class="small" x="300" y="230">文件 + 历史</text><text class="tiny" x="300" y="250">电脑里</text>
+          <rect class="box soft-purple" x="398" y="170" width="180" height="92" rx="18"/>
+          <text class="label" x="488" y="204">我的 Fork</text><text class="small" x="488" y="230">我的云端副本</text><text class="tiny" x="488" y="250">GitHub 上</text>
+          <path class="line" d="M488 264 L488 319" marker-end="url(#arrow-copy)"/>
+          <rect class="box soft-green" x="398" y="322" width="180" height="52" rx="16"/>
+          <text class="small" x="488" y="354">还可再 Clone 到电脑</text>
+          <text class="tiny" x="112" y="301">和原仓库没有自动联系</text>
+          <text class="tiny" x="300" y="301">仍记得远程地址</text>
+        </svg>
+      </figure>
+
+      <h3>那 Fork 又是什么？</h3>
+      <p>Fork 是先在 GitHub 上把别人的仓库复制到你自己的账号名下。你可以独立修改自己的版本，同时保留它来自哪个上游项目的关系。</p>
+      <p>它常用于参与开源项目，也可以用来保留自己的长期分支。不过，如果你只是想在电脑上试用工具，通常不用一上来就 Fork。</p>
+      <div class="concept-grid">
+        <div class="concept-card"><b>只想看看或临时使用</b><p>优先找 Releases；没有成品时，再考虑 Download ZIP。</p></div>
+        <div class="concept-card"><b>准备让 Agent 长期修改</b><p>Clone 更合适，因为历史和远程关系都在。</p></div>
+        <div class="concept-card"><b>想基于别人项目做自己的版本</b><p>先 Fork 到自己的 GitHub，再 Clone 到电脑。</p></div>
+        <div class="concept-card"><b>只是收藏以后再看</b><p>点 Star 即可，不等于下载或复制项目。</p></div>
+      </div>
+      <div class="takeaway"><small>一句话带走</small>ZIP 是文件快照，Clone 是可继续工作的完整副本，Fork 是放到自己 GitHub 名下的项目副本。</div>
+    </section>
+
+    <div class="part-title">
+      <small>Part 02 · 再会用</small>
+      <h2>不背命令，也能让 Agent 正确使用 Git</h2>
+    </div>
+
+    <section class="chapter purple" id="c5">
+      <div class="chapter-head">
+        <div class="chapter-no">05</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：第一次使用时，到底要配置什么？</p>
+          <h2>第一次让 Agent 配置 Git</h2>
+        </div>
+      </div>
+      <p>很多教程会从一排命令开始，普通人看到这里就想退出。其实第一次配置 Git，核心只有三件事。</p>
+      <ul class="steps">
+        <li data-n="1"><div><b>电脑里有没有 Git</b><span>Agent 可以先运行版本检查。没有的话，再从 Git 官方渠道或适合当前系统的可信方式安装。</span></div></li>
+        <li data-n="2"><div><b>提交记录写谁的名字和邮箱</b><span>Git 会把作者身份写进新的 Commit。它是提交身份，不是让 Git 读取你的邮箱密码。</span></div></li>
+        <li data-n="3"><div><b>怎样连接 GitHub 账号</b><span>优先使用 GitHub Desktop 或 GitHub CLI 的浏览器授权。不要把 Token、密码直接发进 Agent 对话。</span></div></li>
+      </ul>
+      <p>Agent 可能会运行下面这些命令。你不用记，只需要知道它们在检查或设置什么：</p>
+      <div class="code-note"><span class="comment"># 检查 Git 是否存在</span><br><span class="hot">git --version</span><br><br><span class="comment"># 设置以后提交时显示的作者信息</span><br>git config --global user.name "你的名字"<br>git config --global user.email "你的提交邮箱"<br><br><span class="comment"># 通过 GitHub CLI 发起登录，通常可走浏览器确认</span><br><span class="hot">gh auth login</span></div>
+      <p><b>全局配置</b>意味着这台电脑上的所有仓库默认使用同一身份；如果电脑多人共用，或者工作与个人项目要分开，可以只为当前仓库配置。</p>
+      <p>如果不想公开真实邮箱，可以在 GitHub 邮箱设置里使用其提供的 no-reply 提交地址。关键不是死记格式，而是让 Agent 根据你的账号设置核对。</p>
+      <div class="warning"><b>GitHub 登录已经不是“输入账号密码”那么简单</b><p>GitHub 的 Git 操作不再支持普通账户密码认证。对小白来说，GitHub Desktop 或 GitHub CLI 的浏览器登录通常比自己创建和管理 Token 更省心。</p></div>
+      <div class="prompt"><p>请检查这台电脑是否已经安装 Git 和 GitHub CLI。先只报告状态，不要修改。然后说明当前 Git 用户名、邮箱配置在全局还是当前仓库；如果需要登录 GitHub，优先使用浏览器授权，不要让我把密码或 Token 发到对话里。</p></div>
+      <div class="takeaway"><small>一句话带走</small>第一次配置就是：确认 Git、设置提交身份、用安全方式连接 GitHub。</div>
+    </section>
+
+    <section class="chapter blue" id="c6">
+      <div class="chapter-head">
+        <div class="chapter-no">06</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：Agent 改文件后，你怎样知道发生了什么？</p>
+          <h2>Status、Diff、Commit 在记录什么</h2>
+        </div>
+      </div>
+      <p>Git 最实用的价值，不是上传 GitHub，而是把“修改过程”变得可以检查。</p>
+      <h3>Status：现在有哪些变化还没处理</h3>
+      <p><code>git status</code> 会告诉你：哪些文件被修改、哪些是新文件、哪些变化准备进入下一次提交。它像项目现场的状态清单。</p>
+      <h3>Diff：前后到底差在哪</h3>
+      <p>Diff 是差异对比。通常红色减号代表原内容被删除，绿色加号代表新内容被加入。Agent 说“只调整了排版”，但 Diff 显示正文也被重写，你就知道它的总结并不完整。</p>
+      <div class="code-note"><span class="comment">修改前</span><br>- 这是一份面向普通人的 GitHub 课程。<br><br><span class="comment">修改后</span><br><span class="hot">+ 欢迎来到改变世界的极客代码宇宙！</span></div>
+      <h3>Commit：确认这批修改值得留下</h3>
+      <p>Commit 可以理解成一次写了说明的正式存档。每个 Commit 都带有作者、时间和说明，帮助以后知道当时为什么改。</p>
+      <p>它不是“每保存一下文件就自动产生”。更合理的节奏是：完成一件相对完整的小事，检查差异，确认没问题，再提交。</p>
+      <div class="flow">
+        <div><b>Status</b><span>现在改了哪些文件</span></div>
+        <div><b>Diff</b><span>具体增加和删除什么</span></div>
+        <div><b>Commit</b><span>确认这批改动值得留下</span></div>
+      </div>
+      <p>对普通人来说，不需要学会手动阅读复杂代码 Diff，但至少可以要求 Agent 给出“文件级摘要”，再对重要文件展示具体差异。</p>
+      <div class="prompt"><p>先不要提交。请检查 Git 状态，列出本次修改涉及的所有文件；分别说明每个文件改了什么，有没有超出我的要求。对正文、配置和删除操作展示 Diff，等我确认后再创建 Commit。</p></div>
+      <div class="takeaway"><small>最实用的三连问</small>改了哪些文件？具体改了什么？这批改动现在值得正式存档吗？</div>
+    </section>
+
+    <section class="chapter green" id="c7">
+      <div class="chapter-head">
+        <div class="chapter-no">07</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：怎样让不确定的修改不碰坏主版本？</p>
+          <h2>Branch 和 Pull Request 为什么有用</h2>
+        </div>
+      </div>
+      <h3>Branch：另开一条试验路线</h3>
+      <p>Branch 就是分支。Git 仓库通常有一条主要分支，常见名字是 <code>main</code>。你可以从它出发，新建另一条路线，让 Agent 在里面尝试修改。</p>
+      <p>比如你的课程网页已经能正常使用，但想尝试全新的视觉风格。直接在主分支大改，失败后容易混乱；在新分支实验，就像从当前存档另开一条支线。</p>
+      <div class="compare">
+        <div><h3>main 主分支</h3><p>当前确认可用的版本。应该尽量保持清楚、稳定。</p></div>
+        <div><h3>design-refresh 分支</h3><p>Agent 尝试新版视觉。成功再合入，失败可以放弃。</p></div>
+      </div>
+      <h3>Pull Request：一张“请检查这批修改”的申请单</h3>
+      <p>Pull Request 通常简称 PR。它提出把一个分支的变化合并进另一个分支，并集中展示说明、Commit、检查结果和 Diff。</p>
+      <p>很多人以为 PR 只适合团队。其实即使项目只有你和 Agent，它也有价值：Agent 在分支里工作，最后形成一份可审查的修改包，你再决定要不要接收。</p>
+      <p>云端编码 Agent 更经常使用这种方式：它接到任务后创建分支、完成修改，再提交一个 PR 给人检查，而不是直接悄悄改掉主版本。</p>
+      <div class="warning"><b>分支不是自动保险</b><p>如果 Agent 仍然在错误分支工作，或者你没有检查就直接合并，风险仍然存在。分支提供隔离，PR 提供审查机会，最后的判断依然属于你。</p></div>
+      <div class="takeaway"><small>游戏式记法</small>Commit 是存档点，Branch 是另一条路线，Pull Request 是把这条路线带回主线前的验收单。</div>
+    </section>
+
+    <section class="chapter yellow" id="c8">
+      <div class="chapter-head">
+        <div class="chapter-no">08</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：电脑里的项目怎样与 GitHub 保持联系？</p>
+          <h2>Push、Pull 与本地、云端同步</h2>
+        </div>
+      </div>
+      <p>Clone 以后，你的电脑里有一份本地仓库，GitHub 上有一份远程仓库。两边有关联，但不会在每次保存文件时自动同步。</p>
+      <div class="compare">
+        <div><h3>Push：把本地提交推上去</h3><p>先在本地完成并 Commit，再把这些提交发送到 GitHub。没有 Commit 的普通修改不会因为 Push 自动变成远程版本。</p></div>
+        <div><h3>Pull：把远程新变化拉下来</h3><p>获取 GitHub 上的新提交，并更新当前本地分支。多人或多个 Agent 同时工作时尤其常见。</p></div>
+      </div>
+      <figure class="figure">
+        <p class="figure-title">本地和云端像两个站点：Push 往右，Pull 往左</p>
+        <svg class="diagram-svg" viewBox="0 0 600 285" role="img" aria-labelledby="sync-title sync-desc">
+          <title id="sync-title">本地仓库与 GitHub 远程仓库同步</title>
+          <desc id="sync-desc">Agent 在本地修改文件并创建 Commit，Push 把提交送到 GitHub，Pull 把 GitHub 上的新提交取回本地。</desc>
+          <defs><marker id="arrow-sync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
+          <rect class="box soft-blue" x="22" y="48" width="190" height="154" rx="22"/>
+          <text class="tiny" x="117" y="77">你的电脑</text><text class="label" x="117" y="111">本地仓库</text>
+          <rect class="box" x="55" y="132" width="124" height="45" rx="12"/><text class="small" x="117" y="160">修改 → Commit</text>
+          <rect class="box soft-green" x="388" y="48" width="190" height="154" rx="22"/>
+          <text class="tiny" x="483" y="77">网络上</text><text class="label" x="483" y="111">GitHub</text>
+          <text class="small" x="483" y="151">远程仓库</text><text class="tiny" x="483" y="177">保存、分享、协作</text>
+          <path class="line" d="M220 101 L380 101" marker-end="url(#arrow-sync)"/><text class="arrow-label" x="300" y="87">Push：送上去</text>
+          <path class="line" d="M380 166 L220 166" marker-end="url(#arrow-sync)"/><text class="arrow-label" x="300" y="194">Pull：取回来</text>
+          <text class="small" x="300" y="252">两边有关联，但不是每保存一次就自动同步</text>
+        </svg>
+      </figure>
+      <p>你可以把 GitHub 理解成“远程备份”，但它不是普通实时云盘。Git 更强调一批一批有说明的版本，而不是每改一个字就立即上传。</p>
+      <h3>为什么会出现冲突？</h3>
+      <p>如果本地和远程都修改了同一部分内容，Git 可能无法自动判断谁应该覆盖谁，于是产生 Merge Conflict，也就是合并冲突。</p>
+      <p>冲突不代表项目坏了，只是 Git 拒绝替你擅自做决定。Agent 可以帮助分析，但涉及重要正文、配置和数据时，仍应让它解释准备保留哪一边。</p>
+      <div class="warning"><b>不要把“强制同步”当万能修复</b><p>强制 Push、硬重置或直接覆盖可能让另一边的历史消失。遇到同步问题，先确认本地和远程各自有什么，再决定保留哪份。</p></div>
+      <div class="takeaway"><small>一句话带走</small>Commit 负责形成版本，Push 把版本送上去，Pull 把远程版本取回来。</div>
+    </section>
+
+    <div class="part-title">
+      <small>Part 03 · 用得稳</small>
+      <h2>让 GitHub 真正成为 Agent 的安全底座</h2>
+    </div>
+
+    <section class="chapter purple" id="c9">
+      <div class="chapter-head">
+        <div class="chapter-no">09</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：为什么项目规则最好跟项目放在一起？</p>
+          <h2>给 Agent 留一份项目说明书</h2>
+        </div>
+      </div>
+      <p>每次打开新对话都重新解释一遍项目，很浪费，也容易漏。现在不少 Agent 支持在仓库中放置专门的说明文件。</p>
+      <div class="concept-grid">
+        <div class="concept-card"><span class="tag">CODEX</span><b>AGENTS.md</b><p>Codex 会从项目根目录及相关目录读取指令，用来了解项目规则、检查方式和“不要做什么”。</p></div>
+        <div class="concept-card"><span class="tag">CLAUDE CODE</span><b>CLAUDE.md</b><p>Claude Code 使用它保存项目级的长期说明，也可以在不同目录设置更具体的规则。</p></div>
+      </div>
+      <p>不同 Agent 支持的文件名和规则并不完全一样，但原理相同：把重复出现、长期有效的项目背景写进仓库，让下一次工作自动获得上下文。</p>
+      <h3>普通人的项目说明里可以写什么</h3>
+      <ul class="plain-list">
+        <li>这个项目的用途，以及最重要的成品文件在哪里；</li>
+        <li>哪些目录可以修改，哪些原始资料不能动；</li>
+        <li>修改 HTML 后要检查手机和桌面显示；</li>
+        <li>大改前先建立分支，提交前必须展示 Diff；</li>
+        <li>禁止上传 API Key、私人照片和本地配置；</li>
+        <li>完成任务后怎样判断“真的完成”。</li>
+      </ul>
+      <p>不要把说明文件写成一篇空泛长文。“认真检查”“保持高质量”很难执行；“修改完成后检查所有目录链接，不得删除正文段落”更有用。</p>
+      <div class="prompt"><p>请根据这个项目当前结构，为我起草一份简短的项目说明文件。只保留长期有效的信息：项目用途、重要文件、允许修改的范围、完成后的检查方式、安全限制。不要写你可以从文件中自动看出来的冗长目录清单。</p></div>
+      <div class="takeaway"><small>一句话带走</small>README 更偏向给人介绍项目；AGENTS.md、CLAUDE.md 等文件用来告诉 Agent 应该怎样在项目里工作。</div>
+    </section>
+
+    <section class="chapter blue" id="c10">
+      <div class="chapter-head">
+        <div class="chapter-no">10</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：普通人怎样形成一个不费脑的固定流程？</p>
+          <h2>一套普通人可用的 Agent 工作流</h2>
+        </div>
+      </div>
+      <p>理解前面的概念以后，不需要每次临时想怎么做。把下面这套顺序交给 Agent，已经能覆盖很多个人项目。</p>
+      <ul class="steps">
+        <li data-n="1"><div><b>先确认位置</b><span>当前目录是不是正确项目？是不是 Git 仓库？现在在哪个分支？避免 Agent 在错误文件夹动手。</span></div></li>
+        <li data-n="2"><div><b>先看当前状态</b><span>有没有别人留下或上一次还没提交的修改？不要把不同任务混进同一次操作。</span></div></li>
+        <li data-n="3"><div><b>为不确定任务开分支</b><span>小改不必形式主义；但整体改版、升级依赖、批量删除等任务值得隔离。</span></div></li>
+        <li data-n="4"><div><b>让 Agent 修改并自己检查</b><span>要求它运行适合项目的测试、预览或链接检查，而不是改完就宣布完成。</span></div></li>
+        <li data-n="5"><div><b>看摘要和 Diff</b><span>确认改动范围没有超出要求，尤其关注删除、配置、依赖和数据文件。</span></div></li>
+        <li data-n="6"><div><b>再 Commit</b><span>用一句能说明目的的话建立存档。不要把几件无关的修改塞进同一次 Commit。</span></div></li>
+        <li data-n="7"><div><b>需要时再 Push 或建 PR</b><span>本地验证过，再同步到 GitHub；重要修改通过 PR 留下更清楚的审查过程。</span></div></li>
+      </ul>
+      <figure class="figure">
+        <p class="figure-title">把七步压缩成一个不容易翻车的小闭环</p>
+        <svg class="diagram-svg" viewBox="0 0 600 330" role="img" aria-labelledby="safe-title safe-desc">
+          <title id="safe-title">AI Agent 使用 Git 的安全工作流</title>
+          <desc id="safe-desc">先确认现场，再让 Agent 修改和验证，然后检查差异、创建存档，最后按需要同步。</desc>
+          <defs><marker id="arrow-safe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
+          <path class="line dash" d="M180 78 L222 78 M378 78 L420 78 M500 120 L500 180 M420 224 L378 224 M222 224 L180 224" marker-end="url(#arrow-safe)"/>
+          <g><rect class="box soft-yellow" x="20" y="40" width="160" height="78" rx="17"/><text class="tiny" x="45" y="65">01</text><text class="label" x="100" y="88">确认现场</text><text class="tiny" x="100" y="108">位置、状态、分支</text></g>
+          <g><rect class="box soft-purple" x="222" y="40" width="156" height="78" rx="17"/><text class="tiny" x="247" y="65">02</text><text class="label" x="300" y="88">修改</text><text class="tiny" x="300" y="108">Agent 开始动手</text></g>
+          <g><rect class="box soft-blue" x="420" y="40" width="160" height="78" rx="17"/><text class="tiny" x="445" y="65">03</text><text class="label" x="500" y="88">验证</text><text class="tiny" x="500" y="108">测试、预览、检查</text></g>
+          <g><rect class="box soft-red" x="420" y="180" width="160" height="82" rx="17"/><text class="tiny" x="445" y="205">04</text><text class="label" x="500" y="230">看 Diff</text><text class="tiny" x="500" y="252">确认没有多改</text></g>
+          <g><rect class="box soft-green" x="222" y="180" width="156" height="82" rx="17"/><text class="tiny" x="247" y="205">05</text><text class="label" x="300" y="230">Commit</text><text class="tiny" x="300" y="252">留下清楚存档</text></g>
+          <g><rect class="box" x="20" y="180" width="160" height="82" rx="17"/><text class="tiny" x="45" y="205">06</text><text class="label" x="100" y="230">需要再同步</text><text class="tiny" x="100" y="252">Push 或建立 PR</text></g>
+          <path class="line" d="M100 264 C100 307 500 307 500 264" marker-start="url(#arrow-safe)"/>
+          <text class="small" x="300" y="310">下一次任务，再从“确认现场”开始</text>
+        </svg>
+      </figure>
+      <p>这套流程看起来比“直接改”多几步，但这些步骤可以由 Agent 自己完成。你只需要在关键节点确认：工作位置、修改范围、验证结果和最终存档。</p>
+      <div class="scene">最值得养成的习惯不是“我会 Git”，而是：<br>Agent 动手前先看状态，动手后再看差异。</div>
+      <div class="prompt"><p>请按这个顺序处理任务：确认仓库和分支 → 检查未提交修改 → 说明计划 → 完成修改 → 运行可用的检查 → 汇总所有改动并展示重要 Diff。先不要 Commit、Push 或合并，等我确认。</p></div>
+      <div class="takeaway"><small>最小闭环</small>确认现场 → 修改 → 验证 → 看差异 → 存档 → 需要时同步。</div>
+    </section>
+
+    <section class="chapter green" id="c11">
+      <div class="chapter-head">
+        <div class="chapter-no">11</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：哪些东西绝对不能稀里糊涂上传？</p>
+          <h2>公开仓库、API Key 与安全边界</h2>
+        </div>
+      </div>
+      <h3>Public 和 Private 不是装饰选项</h3>
+      <p>公开仓库意味着互联网上任何人都可以看到内容；私有仓库只允许你和获得权限的人访问。第一次上传个人项目，如果不确定是否适合公开，先选 Private 更稳妥。</p>
+      <p>把私有仓库改成公开仓库前，要重新检查文件、提交历史、自动化日志和说明，因为公开的不只是一张首页。</p>
+
+      <h3>.gitignore 是门口名单，不是历史橡皮擦</h3>
+      <p><code>.gitignore</code> 用来告诉 Git 哪些文件和目录不应进入新的提交，例如缓存、临时文件、本地配置和含密钥的 <code>.env</code>。</p>
+      <p>但如果某个文件已经被 Git 跟踪，仅仅后来写进 .gitignore 并不会自动把它从历史中抹掉。</p>
+
+      <h3>API Key 泄露后，删除文件还不够</h3>
+      <p>GitHub 的 Secret Scanning 会检查 Git 历史中的已知凭据。真实密钥一旦提交过，即使当前页面已经看不见，它仍可能存在于历史里。</p>
+      <p>正确思路通常是先轮换或撤销密钥，再处理仓库中的敏感数据，而不是只删除当前文件后假装没发生。</p>
+
+      <div class="warning"><b>不要把 Token 当成“发给 Agent 的登录码”</b><p>Token 的作用接近密码。优先使用浏览器授权、系统凭据管理器或受支持的 Secrets 功能，不要在普通聊天里复制真实 Token，也不要把它硬编码进项目文件。</p></div>
+
+      <h3>陌生仓库的命令也需要边界</h3>
+      <p>安装命令可能下载程序、修改环境变量、安装依赖甚至执行脚本。遇到不熟悉的项目，可以让 Agent 先做静态检查和解释，再决定是否运行；不要因为 README 写着“一键安装”就自动获得信任。</p>
+      <ul class="plain-list">
+        <li>先说明命令会访问哪些网站、写入哪些目录；</li>
+        <li>默认不要使用管理员权限；</li>
+        <li>不要读取与任务无关的私人文件；</li>
+        <li>涉及删除、覆盖、强制 Push、重写历史时必须再次确认；</li>
+        <li>尽可能先在独立目录、虚拟环境或测试分支中尝试。</li>
+      </ul>
+      <div class="takeaway"><small>安全底线</small>不确定就先私有；密钥不进仓库；危险命令先解释影响，再决定执行。</div>
+    </section>
+
+    <section class="chapter yellow" id="c12">
+      <div class="chapter-head">
+        <div class="chapter-no">12</div>
+        <div>
+          <p class="chapter-kicker">这一章只回答：真遇到事情时，普通人应该怎样开口？</p>
+          <h2>五个常见场景，应该怎样让 Agent 做</h2>
+        </div>
+      </div>
+      <h3>场景一：我想安装 GitHub 上的一个工具</h3>
+      <div class="prompt compact"><p>先不要安装。确认仓库是否为官方来源，阅读 README、Releases、License、最近更新和主要 Issues。优先判断有没有适合普通用户的正式安装包；如果必须执行命令，先逐项解释会下载、安装和修改什么。</p></div>
+
+      <h3>场景二：我有一个普通文件夹，想让 Agent 长期修改</h3>
+      <div class="prompt compact"><p>先检查这个文件夹是否适合初始化为 Git 仓库。列出不应跟踪的缓存、密钥和私人文件，起草 .gitignore；确认排除范围后再初始化，并为当前正常版本建立第一次 Commit。</p></div>
+
+      <h3>场景三：Agent 要对 HTML 做整体改版</h3>
+      <div class="prompt compact"><p>先检查当前 Git 状态。如果工作区干净，为这次改版建立独立分支。保留正文内容，只修改视觉和排版；完成后检查目录链接、手机宽度和桌面显示，展示主要 Diff，不要直接合并到 main。</p></div>
+
+      <h3>场景四：Agent 改坏了，我想恢复</h3>
+      <div class="prompt compact"><p>先不要执行任何恢复或重置命令。说明哪些修改已经 Commit、哪些还没有；列出可恢复的版本和每种方案会丢失什么。我的目标是保留有价值的内容并回到最近一个正常状态，等我确认方案后再执行。</p></div>
+
+      <h3>场景五：我想把项目上传到 GitHub</h3>
+      <div class="prompt compact"><p>上传前先检查敏感信息、私人文件、超大文件和 .gitignore。默认创建 Private 仓库；说明当前本地分支、远程地址和准备 Push 的 Commit。不要上传未提交修改，也不要自动改成公开仓库。</p></div>
+
+      <p>你会发现，这些指令没有要求你记住某条 Git 命令。真正重要的是：你能说清目标、要求先检查、知道哪里需要确认，并且给 Agent 留出安全退路。</p>
+      <p class="big-line">普通人使用 GitHub 的上限，不取决于会背多少命令，而取决于<span class="marker">能不能在关键步骤提出正确要求。</span></p>
+      <div class="takeaway"><small>课程终点</small>看到 GitHub 不慌，听懂 Agent 的基本动作，并能用自然语言要求它安全地完成工作。</div>
+    </section>
+
+    <section class="summary" aria-labelledby="summary-title">
+      <h2 id="summary-title">最后，记住这 10 句话就够了</h2>
+      <p>如果过几天忘了细节，只回来翻这一页。</p>
+      <ol class="memory">
+        <li>Git 是本地版本记录，GitHub 是云端项目平台。</li>
+        <li>Repository 是文件、文件夹和修改历史组成的项目单位。</li>
+        <li>README 讲用途，Releases 放成品，Issues 记录问题，License 说明使用权利。</li>
+        <li>Star 是关注度参考，不是安全证书。</li>
+        <li>ZIP 是当前文件快照，Clone 是带历史和远程关系的完整副本。</li>
+        <li>Commit 是正式存档，Branch 是试验路线，Pull Request 是合并前的验收单。</li>
+        <li>Status 看现场，Diff 看具体变化，Push 和 Pull 负责本地与远程同步。</li>
+        <li>AGENTS.md、CLAUDE.md 等文件可以保存 Agent 的长期项目规则。</li>
+        <li>.gitignore 不能自动抹掉已经提交过的秘密；密钥泄露后应先轮换或撤销。</li>
+        <li>让 Agent 动手前先检查，动手后看差异，危险操作永远先解释影响。</li>
+      </ol>
+    </section>
+
+    <section class="sources" aria-labelledby="sources-title">
+      <h2 id="sources-title">资料来源、版本与边界</h2>
+      <p>本课程不是对某一门现成视频课的压缩，而是依据 GitHub、Git 与主流 Agent 的官方文档，为普通人重新组织的原创轻量课程。定义和当前工具行为以官方资料为准；“网盘、游戏存档、试验路线”等是帮助理解的通俗比喻。</p>
+
+      <h3>GitHub 与 Git 基础</h3>
+      <ul>
+        <li><a href="https://docs.github.com/en/get-started/using-github/hello-world">GitHub Docs：Hello World</a></li>
+        <li><a href="https://docs.github.com/en/get-started/using-git/about-git">GitHub Docs：About Git</a></li>
+        <li><a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/about-repositories">GitHub Docs：About repositories</a></li>
+        <li><a href="https://docs.github.com/en/get-started/learning-to-code/getting-started-with-git">GitHub Docs：Getting started with Git</a></li>
+        <li><a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository">GitHub Docs：Cloning a repository</a></li>
+        <li><a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes">GitHub Docs：About READMEs</a></li>
+        <li><a href="https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases">GitHub Docs：About releases</a></li>
+        <li><a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/learning-about-issues/about-issues">GitHub Docs：About issues</a></li>
+      </ul>
+
+      <h3>身份、安全与许可</h3>
+      <ul>
+        <li><a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github">GitHub Docs：About authentication to GitHub</a></li>
+        <li><a href="https://docs.github.com/en/get-started/git-basics/ignoring-files">GitHub Docs：Ignoring files</a></li>
+        <li><a href="https://docs.github.com/en/code-security/concepts/secret-security/secret-scanning">GitHub Docs：Secret scanning</a></li>
+        <li><a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/managing-repository-settings/setting-repository-visibility">GitHub Docs：Setting repository visibility</a></li>
+        <li><a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository">GitHub Docs：Licensing a repository</a></li>
+      </ul>
+
+      <h3>Agent 项目说明</h3>
+      <ul>
+        <li><a href="https://learn.chatgpt.com/docs/agent-configuration/agents-md">Codex：Custom instructions with AGENTS.md</a></li>
+        <li><a href="https://learn.chatgpt.com/guides/best-practices">Codex：Best practices</a></li>
+        <li><a href="https://code.claude.com/docs/en/memory">Claude Code：How Claude remembers your project</a></li>
+      </ul>
+
+      <p><b>访问状态：</b>上述文档均可公开阅读；若要实际创建、同步或修改个人 GitHub 仓库，需要注册并登录 GitHub。<br>
+      <b>更新边界：</b>Git、仓库、Commit、Branch 等基础概念相对稳定；Agent 的说明文件、界面和登录方式可能变化，相关内容已按 2026-08-15 官方文档核查。</p>
+    </section>
+
+    <footer class="meta">
+      <p>课程版本：v0.2 完整 HTML 初稿｜覆盖：12/12 章<br>
+      生成日期：2026-08-15｜事实核查日期：2026-08-15｜建议阅读时间：60—90 分钟</p>
+    </footer>
+    </div>
+  </main>
+  <script>
+    (() => {
+      const body = document.body;
+      const toggle = document.getElementById('tocToggle');
+      const panel = document.getElementById('mobileToc');
+      const backdrop = document.getElementById('tocBackdrop');
+      const closeButton = document.getElementById('tocClose');
+      const chapters = [...document.querySelectorAll('.chapter[id]')];
+      const trackedLinks = [...document.querySelectorAll('.side-toc a[href^="#c"], .mobile-toc a[href^="#c"]')];
+
+      const setOpen = (open) => {
+        body.classList.toggle('toc-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        panel.setAttribute('aria-hidden', String(!open));
+        backdrop.setAttribute('aria-hidden', String(!open));
+        if (open) closeButton.focus();
+      };
+
+      toggle.addEventListener('click', () => setOpen(!body.classList.contains('toc-open')));
+      closeButton.addEventListener('click', () => setOpen(false));
+      backdrop.addEventListener('click', () => setOpen(false));
+      panel.addEventListener('click', (event) => {
+        if (event.target.closest('a')) setOpen(false);
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') setOpen(false);
+      });
+
+      const markChapter = (id) => {
+        trackedLinks.forEach((link) => {
+          const active = link.getAttribute('href') === `#${id}`;
+          link.classList.toggle('is-active', active);
+          if (active) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+        toggle.textContent = `目录 · ${id.slice(1).padStart(2, '0')}`;
+      };
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+          if (visible[0]) markChapter(visible[0].target.id);
+        }, { rootMargin: '-18% 0px -68% 0px', threshold: 0 });
+        chapters.forEach((chapter) => observer.observe(chapter));
+      }
+    })();
+  </script>
+</body>
+</html>

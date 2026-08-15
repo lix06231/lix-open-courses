@@ -1,0 +1,34 @@
+name: Publish course release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "courses/github-ai-agent/downloads/**"
+      - ".github/workflows/publish-course-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create or refresh release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="github-ai-agent-v0.2"
+          pdf="courses/github-ai-agent/downloads/github-for-agent-beginners.pdf"
+          bundle="courses/github-ai-agent/downloads/github-ai-agent-course-v0.2.zip"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$pdf" "$bundle" --clobber
+          else
+            gh release create "$tag" "$pdf" "$bundle" \
+              --title "普通人也能看懂的 GitHub｜AI Agent 小白课 v0.2" \
+              --notes "包含完整课程 PDF 与 HTML/PDF 离线课程包。在线 HTML 版本请访问本仓库的 GitHub Pages。"
+          fi

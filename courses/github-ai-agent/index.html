@@ -419,13 +419,14 @@
     }
 
     @media print {
-      @page { size: A5; margin: 13mm; }
-      body { background: #fff; font-size: 10.5pt; line-height: 1.65; }
+      @page { size: A4; margin: 14mm; background: #fbf8f1; }
+      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body { background: var(--paper); font-size: 17px; line-height: 1.86; }
       .shell { width: 100%; padding: 0; display: block; }
+      .reader { width: 100%; }
       .side-toc, .toc-toggle, .toc-backdrop, .mobile-toc { display: none !important; }
-      .cover { min-height: 175mm; break-after: page; }
-      .chapter, .summary, .sources, .concept-card, .compare > div, .prompt, .warning, .takeaway { break-inside: avoid; }
-      .chapter { padding: 10mm 0; }
+      .cover { min-height: 255mm; break-after: page; }
+      .summary, .sources, .concept-card, .compare > div, .prompt, .warning, .takeaway, .scene, .figure, .steps li { break-inside: avoid; }
       a { text-decoration: none; }
     }
   </style>
@@ -549,6 +550,21 @@
         <svg class="diagram-svg" viewBox="0 0 600 360" role="img" aria-labelledby="rel-title rel-desc">
           <title id="rel-title">Agent、Repo、Git 与 GitHub 的关系</title>
           <desc id="rel-desc">Agent 读取和修改项目仓库，Git 在本地记录仓库的变化，GitHub 保存并同步云端仓库。</desc>
+          <style>
+            .box { fill: #fff; stroke: #29292d; stroke-width: 2; }
+            .soft-red { fill: #fff0f0; }
+            .soft-blue { fill: #eef7ff; }
+            .soft-yellow { fill: #fff8d8; }
+            .soft-purple { fill: #f4efff; }
+            .soft-green { fill: #edf9f1; }
+            .line { fill: none; stroke: #29292d; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+            .dash { stroke-dasharray: 7 7; }
+            .label, .small, .tiny, .arrow-label { font-family: "Lix Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; text-anchor: middle; }
+            .label { fill: #1d1d20; font-size: 22px; font-weight: 900; }
+            .small { fill: #6e6b73; font-size: 16px; font-weight: 700; }
+            .tiny { fill: #6e6b73; font-size: 14px; font-weight: 700; }
+            .arrow-label { fill: #c13743; font-size: 15px; font-weight: 900; }
+          </style>
           <defs><marker id="arrow-rel" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
           <rect class="box soft-purple" x="200" y="22" width="200" height="68" rx="18"/>
           <text class="label" x="300" y="52">AI Agent</text><text class="small" x="300" y="75">读取、修改、检查</text>
@@ -600,6 +616,21 @@
         <svg class="diagram-svg" viewBox="0 0 600 305" role="img" aria-labelledby="read-title read-desc">
           <title id="read-title">GitHub 仓库阅读顺序</title>
           <desc id="read-desc">先看 README，再看 Releases，然后查看最近更新、Issues、License 和发布者身份。</desc>
+          <style>
+            .box { fill: #fff; stroke: #29292d; stroke-width: 2; }
+            .soft-red { fill: #fff0f0; }
+            .soft-blue { fill: #eef7ff; }
+            .soft-yellow { fill: #fff8d8; }
+            .soft-purple { fill: #f4efff; }
+            .soft-green { fill: #edf9f1; }
+            .line { fill: none; stroke: #29292d; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+            .dash { stroke-dasharray: 7 7; }
+            .label, .small, .tiny, .arrow-label { font-family: "Lix Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; text-anchor: middle; }
+            .label { fill: #1d1d20; font-size: 22px; font-weight: 900; }
+            .small { fill: #6e6b73; font-size: 16px; font-weight: 700; }
+            .tiny { fill: #6e6b73; font-size: 14px; font-weight: 700; }
+            .arrow-label { fill: #c13743; font-size: 15px; font-weight: 900; }
+          </style>
           <defs><marker id="arrow-read" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
           <path class="line dash" d="M172 79 L222 79 M378 79 L430 79 M503 116 L503 176 M430 214 L378 214 M222 214 L170 214" marker-end="url(#arrow-read)"/>
           <g><rect class="box soft-red" x="22" y="42" width="150" height="74" rx="16"/><text class="tiny" x="48" y="66">01</text><text class="label" x="97" y="90">README</text><text class="tiny" x="97" y="108">它是干什么的</text></g>
@@ -648,6 +679,21 @@
         <svg class="diagram-svg" viewBox="0 0 600 390" role="img" aria-labelledby="copy-title copy-desc">
           <title id="copy-title">Download ZIP、Clone 和 Fork 的区别</title>
           <desc id="copy-desc">ZIP 只把当前文件下载到电脑；Clone 把仓库与历史复制到电脑并保留远程关系；Fork 先在自己的 GitHub 账号中复制一份。</desc>
+          <style>
+            .box { fill: #fff; stroke: #29292d; stroke-width: 2; }
+            .soft-red { fill: #fff0f0; }
+            .soft-blue { fill: #eef7ff; }
+            .soft-yellow { fill: #fff8d8; }
+            .soft-purple { fill: #f4efff; }
+            .soft-green { fill: #edf9f1; }
+            .line { fill: none; stroke: #29292d; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+            .dash { stroke-dasharray: 7 7; }
+            .label, .small, .tiny, .arrow-label { font-family: "Lix Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; text-anchor: middle; }
+            .label { fill: #1d1d20; font-size: 22px; font-weight: 900; }
+            .small { fill: #6e6b73; font-size: 16px; font-weight: 700; }
+            .tiny { fill: #6e6b73; font-size: 14px; font-weight: 700; }
+            .arrow-label { fill: #c13743; font-size: 15px; font-weight: 900; }
+          </style>
           <defs><marker id="arrow-copy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
           <rect class="box soft-yellow" x="170" y="18" width="260" height="68" rx="18"/>
           <text class="label" x="300" y="49">别人的 GitHub 仓库</text><text class="small" x="300" y="72">共同的起点</text>
@@ -776,6 +822,21 @@
         <svg class="diagram-svg" viewBox="0 0 600 285" role="img" aria-labelledby="sync-title sync-desc">
           <title id="sync-title">本地仓库与 GitHub 远程仓库同步</title>
           <desc id="sync-desc">Agent 在本地修改文件并创建 Commit，Push 把提交送到 GitHub，Pull 把 GitHub 上的新提交取回本地。</desc>
+          <style>
+            .box { fill: #fff; stroke: #29292d; stroke-width: 2; }
+            .soft-red { fill: #fff0f0; }
+            .soft-blue { fill: #eef7ff; }
+            .soft-yellow { fill: #fff8d8; }
+            .soft-purple { fill: #f4efff; }
+            .soft-green { fill: #edf9f1; }
+            .line { fill: none; stroke: #29292d; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+            .dash { stroke-dasharray: 7 7; }
+            .label, .small, .tiny, .arrow-label { font-family: "Lix Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; text-anchor: middle; }
+            .label { fill: #1d1d20; font-size: 22px; font-weight: 900; }
+            .small { fill: #6e6b73; font-size: 16px; font-weight: 700; }
+            .tiny { fill: #6e6b73; font-size: 14px; font-weight: 700; }
+            .arrow-label { fill: #c13743; font-size: 15px; font-weight: 900; }
+          </style>
           <defs><marker id="arrow-sync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
           <rect class="box soft-blue" x="22" y="48" width="190" height="154" rx="22"/>
           <text class="tiny" x="117" y="77">你的电脑</text><text class="label" x="117" y="111">本地仓库</text>
@@ -852,6 +913,21 @@
         <svg class="diagram-svg" viewBox="0 0 600 330" role="img" aria-labelledby="safe-title safe-desc">
           <title id="safe-title">AI Agent 使用 Git 的安全工作流</title>
           <desc id="safe-desc">先确认现场，再让 Agent 修改和验证，然后检查差异、创建存档，最后按需要同步。</desc>
+          <style>
+            .box { fill: #fff; stroke: #29292d; stroke-width: 2; }
+            .soft-red { fill: #fff0f0; }
+            .soft-blue { fill: #eef7ff; }
+            .soft-yellow { fill: #fff8d8; }
+            .soft-purple { fill: #f4efff; }
+            .soft-green { fill: #edf9f1; }
+            .line { fill: none; stroke: #29292d; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+            .dash { stroke-dasharray: 7 7; }
+            .label, .small, .tiny, .arrow-label { font-family: "Lix Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; text-anchor: middle; }
+            .label { fill: #1d1d20; font-size: 22px; font-weight: 900; }
+            .small { fill: #6e6b73; font-size: 16px; font-weight: 700; }
+            .tiny { fill: #6e6b73; font-size: 14px; font-weight: 700; }
+            .arrow-label { fill: #c13743; font-size: 15px; font-weight: 900; }
+          </style>
           <defs><marker id="arrow-safe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#29292d"/></marker></defs>
           <path class="line dash" d="M180 78 L222 78 M378 78 L420 78 M500 120 L500 180 M420 224 L378 224 M222 224 L180 224" marker-end="url(#arrow-safe)"/>
           <g><rect class="box soft-yellow" x="20" y="40" width="160" height="78" rx="17"/><text class="tiny" x="45" y="65">01</text><text class="label" x="100" y="88">确认现场</text><text class="tiny" x="100" y="108">位置、状态、分支</text></g>

@@ -425,7 +425,18 @@
       .shell { width: 100%; padding: 0; display: block; }
       .reader { width: 100%; }
       .side-toc, .toc-toggle, .toc-backdrop, .mobile-toc { display: none !important; }
-      .cover { min-height: 255mm; break-after: page; }
+      .cover {
+        min-height: 255mm;
+        display: block;
+        break-after: page;
+      }
+      .cover-meta {
+        position: static;
+        height: auto;
+        margin-top: 140px;
+        align-items: start;
+      }
+      .cover-meta div { height: auto; min-height: 0; }
       .summary, .sources, .concept-card, .compare > div, .prompt, .warning, .takeaway, .scene, .figure, .steps li { break-inside: avoid; }
       a { text-decoration: none; }
     }

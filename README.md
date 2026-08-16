@@ -15,11 +15,21 @@
 - [课程信息](courses/github-ai-agent/course-info/course-info.md)
 - [学习路径](courses/github-ai-agent/learning-path/learning-path.md)
 
+### AI for Everyone｜吴恩达
+
+把吴恩达（Andrew Ng）在 DeepLearning.AI 的经典公开课整理成中文可读教材。不要求编程或数学基础，帮助普通人理解 AI 能做什么、怎样选择和启动 AI 项目，以及 AI 对社会的影响。
+
+- [在线阅读完整版](https://lix06231.github.io/lix-open-courses/courses/ai-for-everyone/)
+- [下载 PDF](courses/ai-for-everyone/downloads/ai-for-everyone-course.pdf)
+- [下载完整课程包](courses/ai-for-everyone/downloads/ai-for-everyone-course-v1.0.zip)
+- [课程信息](courses/ai-for-everyone/course-info/course-info.md)
+- [学习路径](courses/ai-for-everyone/learning-path/learning-path.md)
+
 ## 使用说明
 
 - HTML 版适合浏览器在线阅读，包含完整视觉图解和跳转目录。
 - PDF 版适合下载、转发和离线阅读。
-- 完整课程包包含完整版 HTML、试学版和 PDF。
+- 完整课程包包含完整版 HTML、PDF（部分课程提供试学版）。
 
 ## 内容与版权
 
